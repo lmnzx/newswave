@@ -1,11 +1,12 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Form};
-use sqlx::PgPool;
+use axum::{http::StatusCode, response::IntoResponse, Extension, Form};
+use std::sync::Arc;
 use validator::Validate;
+
+use crate::AppState;
 
 /*
     TODO:
-    - [x] get form data from request
-    - [x] insert new subscriber into db
+    - [x] subscriber validation
 */
 
 #[derive(serde::Deserialize, Validate)]
@@ -17,9 +18,15 @@ pub struct FormData {
 }
 
 pub async fn subscribe(
-    State(pool): State<PgPool>,
+    Extension(app_state): Extension<Arc<AppState>>,
     Form(input): Form<FormData>,
 ) -> impl IntoResponse {
+    let pool = &app_state.pool;
+
+    let redis_client = app_state.redis_client.clone();
+
+    let mut con = redis_client.get_async_connection().await.unwrap();
+
     match input.validate() {
         Ok(_) => (),
         Err(e) => {
@@ -38,9 +45,12 @@ pub async fn subscribe(
         input.email,
         input.name,
         chrono::Utc::now()
-    ).execute(&pool).await {
+    ).execute(pool).await {
         Ok(_) => {
             tracing::info!("new subscriber added to db");
+
+            let _ :() = redis::cmd("SET").arg(&[uuid::Uuid::new_v4().to_string(), input.email]).query_async( &mut con).await.unwrap();
+
             (StatusCode::OK, "Congratulations you have subscribers to NewsWave").into_response()
         },
         Err(e) => {
