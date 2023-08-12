@@ -1,13 +1,9 @@
 use axum::{http::StatusCode, response::IntoResponse, Extension, Form};
+use redis::AsyncCommands;
 use std::sync::Arc;
 use validator::Validate;
 
 use crate::AppState;
-
-/*
-    TODO:
-    - [x] subscriber validation
-*/
 
 #[derive(serde::Deserialize, Validate)]
 pub struct FormData {
@@ -38,9 +34,7 @@ pub async fn subscribe(
     tracing::info!("subscription request from: {email}", email = input.email);
 
     match sqlx::query!(
-        r#"
-        INSERT INTO subscriptions (id, email, name, subscribed_at, status) VALUES ($1, $2, $3, $4, 'pending_confirmation')
-        "#,
+        "INSERT INTO subscriptions (id, email, name, subscribed_at, status) VALUES ($1, $2, $3, $4, 'pending_confirmation')",
         uuid::Uuid::new_v4(),
         input.email,
         input.name,
@@ -49,7 +43,9 @@ pub async fn subscribe(
         Ok(_) => {
             tracing::info!("new subscriber added to db");
 
-            let _ :() = redis::cmd("SET").arg(&[uuid::Uuid::new_v4().to_string(), input.email]).query_async( &mut con).await.unwrap();
+            // let _ :() = redis::cmd("SET").arg(&[uuid::Uuid::new_v4().to_string(), input.email]).query_async( &mut con).await.unwrap();
+
+           con.set::<String, String, ()>(uuid::Uuid::new_v4().to_string(), input.email).await.unwrap();
 
             (StatusCode::OK, "Congratulations you have subscribers to NewsWave").into_response()
         },
