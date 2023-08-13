@@ -15,10 +15,23 @@ name = "newswave"
 [dependencies]
 axum = { version = "0.6.18", features = ["tracing"] }
 chrono = { version = "0.4.26", features = ["clock"] }
-email_address = "0.2.4"
 redis = { version = "0.23.0", features = ["tokio-rustls-comp"] }
 serde = { version = "1.0.169", features = ["derive"] }
-sqlx = { version = "0.7.0", features = ["postgres", "macros", "runtime-tokio-rustls", "uuid", "chrono", "migrate"] }
+sqlx = { version = "0.7.0", features = [
+    "postgres",
+    "macros",
+    "runtime-tokio-rustls",
+    "uuid",
+    "chrono",
+    "migrate",
+] }
+lettre = { version = "0.10.4", default-features = false, features = [
+    "smtp-transport",
+    "tokio1-rustls-tls",
+    "rustls-tls",
+    "hostname",
+    "builder",
+] }
 tokio = { version = "1.29.1", features = ["full"] }
 tower = { version = "0.4.13", features = ["util"] }
 tower-http = { version = "0.4.1", features = ["trace", "util"] }
