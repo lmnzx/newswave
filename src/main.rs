@@ -8,6 +8,16 @@ use std::{net::SocketAddr, sync::Arc};
 use newswave::routes::{global_404, health_check, subscribe, subscriptions_confirm};
 use newswave::AppState;
 
+/*
+    TODO
+    [ ] send confirmation email
+    [ ] publish newsletter
+    [ ] send newsletter
+    [ ] configuration
+   ![ ] error handling
+    [ ] deploy
+*/
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().json().init();

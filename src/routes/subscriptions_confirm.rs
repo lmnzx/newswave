@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{extract::Path, http::StatusCode, response::IntoResponse, Extension};
 use redis::AsyncCommands;
 
-use crate::AppState;
+use crate::{email_service::send_email, AppState};
 
 pub async fn subscriptions_confirm(
     Extension(app_state): Extension<Arc<AppState>>,

@@ -3,6 +3,7 @@ use redis::AsyncCommands;
 use std::sync::Arc;
 use validator::Validate;
 
+use crate::email_service::send_email;
 use crate::AppState;
 
 #[derive(serde::Deserialize, Validate)]
@@ -45,7 +46,13 @@ pub async fn subscribe(
 
             // let _ :() = redis::cmd("SET").arg(&[uuid::Uuid::new_v4().to_string(), input.email]).query_async( &mut con).await.unwrap();
 
-           con.set::<String, String, ()>(uuid::Uuid::new_v4().to_string(), input.email).await.unwrap();
+            let token = uuid::Uuid::new_v4().to_string();
+
+           con.set::<String, String, ()>(token.to_owned(), input.email.to_owned()).await.unwrap();
+
+            let body = format!("Welcome to NewsWave, please confirm your email by clicking on the link below: \n\n http://localhost:3000/subscribe/{}", token);
+
+            send_email(input.email, "Welcome to NewsWave".to_owned(), body).await;
 
             (StatusCode::OK, "Congratulations you have subscribers to NewsWave").into_response()
         },
