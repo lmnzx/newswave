@@ -44,8 +44,6 @@ pub async fn subscribe(
         Ok(_) => {
             tracing::info!("new subscriber added to db");
 
-            // let _ :() = redis::cmd("SET").arg(&[uuid::Uuid::new_v4().to_string(), input.email]).query_async( &mut con).await.unwrap();
-
             let token = uuid::Uuid::new_v4().to_string();
 
            con.set::<String, String, ()>(token.to_owned(), input.email.to_owned()).await.unwrap();

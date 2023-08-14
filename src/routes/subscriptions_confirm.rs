@@ -3,13 +3,13 @@ use std::sync::Arc;
 use axum::{extract::Path, http::StatusCode, response::IntoResponse, Extension};
 use redis::AsyncCommands;
 
-use crate::{email_service::send_email, AppState};
+use crate::AppState;
 
 pub async fn subscriptions_confirm(
     Extension(app_state): Extension<Arc<AppState>>,
     Path(token): Path<String>,
 ) -> impl IntoResponse {
-    tracing::info!("health check endpoint hit");
+    tracing::info!("subscriptions_confirm endpoint hit");
 
     let pool = &app_state.pool;
 
