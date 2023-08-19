@@ -79,7 +79,11 @@ impl Settings {
         let s = Config::builder()
             .add_source(File::with_name("config/base.yaml"))
             .add_source(File::with_name(&format!("config/{}", mode)).required(false))
-            .add_source(Environment::with_prefix("app"))
+            .add_source(
+                Environment::with_prefix("APP")
+                    .prefix_separator("_")
+                    .separator("__"),
+            )
             .build()?;
 
         tracing::info!("Running in {} mode", mode);
