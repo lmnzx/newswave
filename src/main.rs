@@ -11,12 +11,12 @@ use newswave::AppState;
 
 /*
     TODO
+    [ ] deploy
     [x] send confirmation email
     [ ] publish newsletter
     [ ] send newsletter
     [-] configuration // almost done still needs refactoring
    ![ ] error handling
-    [ ] deploy
 */
 
 #[tokio::main]
@@ -27,19 +27,11 @@ async fn main() {
 
     tracing::info!("starting server...");
 
-    // connecting to postgres
-    // let pool = PgPoolOptions::new()
-    //     .max_connections(5)
-    //     .connect("postgres://postgres:password@localhost:5432/newswave")
-    //     .await
-    //     .unwrap();
+    tracing::info!("{:?}", s);
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect_lazy_with(s.database.connection_string());
-
-    // connecting to redis
-    // let redis_client = Arc::new(redis::Client::open("redis://localhost:6379").unwrap());
 
     let redis_client = Arc::new(redis::Client::open(s.redis.connection_string()).unwrap());
 
@@ -55,7 +47,11 @@ async fn main() {
         .layer(Extension(app_state.clone()))
         .fallback(global_404);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], s.application.port));
+    // let addr = SocketAddr::from(([127, 0, 0, 1], s.application.port));
+    let addr = match (s.application.host.parse(), s.application.port) {
+        (Ok(ip), port) => SocketAddr::new(ip, port),
+        _ => panic!("Invalid address"),
+    };
 
     tracing::info!("listening on {}", addr);
 
