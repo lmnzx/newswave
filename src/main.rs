@@ -11,11 +11,8 @@ use newswave::AppState;
 
 /*
     TODO
-    [ ] deploy
-    [x] send confirmation email
     [ ] publish newsletter
     [ ] send newsletter
-    [-] configuration // almost done still needs refactoring
    ![ ] error handling
 */
 
@@ -36,8 +33,8 @@ async fn main() {
     let redis_client = Arc::new(redis::Client::open(s.redis.connection_string()).unwrap());
 
     let app_state = Arc::new(AppState {
-        pool: pool.clone(),
-        redis_client: redis_client,
+        pool,
+        redis_client,
     });
 
     let app = Router::new()
