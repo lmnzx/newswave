@@ -34,7 +34,7 @@ lettre = { version = "0.10.4", default-features = false, features = [
 ] }
 tokio = { version = "1.29.1", features = ["full"] }
 tower = { version = "0.4.13", features = ["util"] }
-tower-http = { version = "0.4.1", features = ["trace", "util"] }
+tower-http = { version = "0.4.1", features = ["fs", "trace", "util"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.17", features = [
     "env-filter",

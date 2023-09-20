@@ -1,12 +1,14 @@
 use axum::{
-    routing::{get, post},
+    http::StatusCode,
+    routing::{get, get_service, post},
     Extension, Router,
 };
 use sqlx::postgres::PgPoolOptions;
 use std::{net::SocketAddr, sync::Arc};
+use tower_http::services::{ServeDir, ServeFile};
 
 use newswave::config::Settings;
-use newswave::routes::{global_404, health_check, subscribe, subscriptions_confirm};
+use newswave::routes::{health_check, subscribe, subscriptions_confirm};
 use newswave::AppState;
 
 /*
@@ -32,17 +34,27 @@ async fn main() {
 
     let redis_client = Arc::new(redis::Client::open(s.redis.connection_string()).unwrap());
 
-    let app_state = Arc::new(AppState {
-        pool,
-        redis_client,
-    });
+    let app_state = Arc::new(AppState { pool, redis_client });
 
     let app = Router::new()
-        .route("/health_check", get(health_check))
-        .route("/subscribe", post(subscribe))
-        .route("/subscribe/:token", get(subscriptions_confirm))
+        .route("/api/health_check", get(health_check))
+        .route("/api/subscribe", post(subscribe))
+        .route("/api/subscribe/:token", get(subscriptions_confirm))
         .layer(Extension(app_state.clone()))
-        .fallback(global_404);
+        .nest_service(
+            "/assets",
+            get_service(ServeDir::new("./web/assets")).handle_error(|e| async move {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Unhandled internal error: {}", e),
+                )
+            }),
+        )
+        .fallback_service(
+            get_service(ServeFile::new("./web/index.html")).handle_error(|_| async move {
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            }),
+        );
 
     // let addr = SocketAddr::from(([127, 0, 0, 1], s.application.port));
     let addr = match (s.application.host.parse(), s.application.port) {
