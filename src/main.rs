@@ -1,14 +1,10 @@
-use axum::{
-    http::StatusCode,
-    routing::{get, get_service, post},
-    Extension, Router,
-};
+use axum::{http::StatusCode, routing::get_service, Extension, Router};
 use sqlx::postgres::PgPoolOptions;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::services::{ServeDir, ServeFile};
 
 use newswave::config::Settings;
-use newswave::routes::{health_check, subscribe, subscriptions_confirm};
+use newswave::routes::routes;
 use newswave::AppState;
 
 /*
@@ -37,9 +33,7 @@ async fn main() {
     let app_state = Arc::new(AppState { pool, redis_client });
 
     let app = Router::new()
-        .route("/api/health_check", get(health_check))
-        .route("/api/subscribe", post(subscribe))
-        .route("/api/subscribe/:token", get(subscriptions_confirm))
+        .merge(routes())
         .layer(Extension(app_state.clone()))
         .nest_service(
             "/assets",
