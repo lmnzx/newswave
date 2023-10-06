@@ -9,7 +9,7 @@ pub struct Letter {
 
 pub async fn publish_newsletter(Json(payload): Json<Letter>) -> impl IntoResponse {
     tracing::info!("send newsletter");
-    tracing::info!("{:?}", payload);
+    tracing::info!("{:?}", payload.body);
 
     (StatusCode::OK, "everything is fine, boss 👍")
 }

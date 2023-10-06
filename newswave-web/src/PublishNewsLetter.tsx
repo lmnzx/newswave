@@ -7,10 +7,13 @@ export default function PublishNewsLetter() {
   const [value, setValue] = useState('');
 
   const submit = () => {
+      const msg = `{ "body": "${value}" }`;
      const f = fetch('http://localhost:3000/api/publish', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },body: JSON.stringify(`{ body: ${value} }`),
+          headers: { 'Content-Type': 'application/json' },
+          body: msg,
       }).then(res => res.body)
+         .then(data => data)
       console.log(f)
   }
 
