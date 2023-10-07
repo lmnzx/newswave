@@ -8,13 +8,12 @@ export default function PublishNewsLetter() {
 
   const submit = () => {
       const msg = `{ "body": "${value}" }`;
-     const f = fetch('http://localhost:3000/api/publish', {
+      fetch('http://localhost:3000/api/publish', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: msg,
-      }).then(res => res.body)
-         .then(data => data)
-      console.log(f)
+      }).then(res => res.json()).then(data => {
+          console.log(data)})
   }
 
   return (

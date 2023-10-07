@@ -46,14 +46,14 @@ pub async fn subscribe(
 
             let token = uuid::Uuid::new_v4().to_string();
 
-           con.set_ex::<String, String, ()>(token.to_owned(), input.email.to_owned(), 60 * 30).await.unwrap();
+            con.set_ex::<String, String, ()>(token.to_owned(), input.email.to_owned(), 60 * 30).await.unwrap();
 
-            let body = format!("Welcome to NewsWave, please confirm your email by clicking on the link below: \n\n http://localhost:3000/subscribe/{}\n\n The link is only valid for 30mins.", token);
+            let body = format!("Welcome to NewsWave, please confirm your email by clicking on the link below: \n\n http://localhost:3000/api/subscribe/{}\n\n The link is only valid for 30mins.", token);
 
             send_email(input.email, "Welcome to NewsWave".to_owned(), body).await;
 
             (StatusCode::OK, "Congratulations you have subscribers to NewsWave").into_response()
-        },
+        }
         Err(e) => {
             tracing::error!("failed to execute query: {:?}", e);
             (StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error: failed to execute query").into_response()
