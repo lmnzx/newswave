@@ -27,7 +27,7 @@ pub async fn send_email(to: String, subject: String, body: String) {
         .reply_to(from_email.parse().unwrap())
         .to(to.parse().unwrap())
         .subject(subject)
-        .header(ContentType::TEXT_PLAIN)
+        .header(ContentType::TEXT_HTML)
         .body(body)
         .unwrap();
 
