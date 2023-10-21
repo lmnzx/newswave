@@ -9,11 +9,12 @@ use crate::AppState;
 
 #[derive(Deserialize, Debug)]
 pub struct Letter {
+    subject: String,
     body: String,
 }
 
 #[derive(Debug)]
-struct Subcribers {
+struct Subscribers {
     email: String,
 }
 
@@ -25,6 +26,7 @@ pub async fn publish_newsletter(
 
     tracing::info!("received a new newsletter");
 
+    let subject = &payload.subject;
     let body = &payload.body;
 
     match sqlx::query!(
@@ -39,7 +41,7 @@ pub async fn publish_newsletter(
         Ok(_) => {
             tracing::info!("saved the newsletter");
             let subs = sqlx::query_as!(
-                Subcribers,
+                Subscribers,
                 "SELECT email FROM subscriptions WHERE status = 'confirmed'"
             )
             .fetch_all(pool)
@@ -47,7 +49,7 @@ pub async fn publish_newsletter(
             .unwrap();
 
             for x in subs {
-                send_email(x.email, "Hii".to_string(), body.to_string()).await;
+                send_email(x.email, subject.to_string(), body.to_string()).await;
             }
 
             ResponseJson("got it")
