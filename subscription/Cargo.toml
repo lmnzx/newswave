@@ -15,6 +15,7 @@ anyhow = "1"
 bytes = "1"
 # General-purpose crate with common HTTP types.
 http = "0.2"
+maud = "0.25.0"
 # The Spin SDK.
 spin-sdk = { git = "https://github.com/fermyon/spin", tag = "v1.5.1" }
 
