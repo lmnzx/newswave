@@ -1,0 +1,17 @@
+spin_manifest_version = "1"
+authors = ["Sayan Mallick <snyxmk@gmail.com>"]
+description = "a simple newsletter application"
+name = "newswave"
+trigger = { type = "http", base = "/" }
+version = "0.1.0"
+
+[[component]]
+id = "subscription"
+source = "subscription/target/wasm32-wasi/release/subscription.wasm"
+allowed_http_hosts = []
+[component.trigger]
+route = "/subscribe"
+[component.build]
+command = "cargo build --target wasm32-wasi --release"
+workdir = "subscription"
+watch = ["src/**/*.rs", "Cargo.toml"]
