@@ -9,9 +9,9 @@ use newswave::AppState;
 
 /*
     TODO
-    [ ] publish newsletter
-    [ ] send newsletter
-   ![ ] error handling
+    [ ] admin login
+    [ ] sign-up form
+    [ ] error handling
 */
 
 #[tokio::main]
