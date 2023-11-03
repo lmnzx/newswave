@@ -6,6 +6,7 @@ trigger = { type = "http", base = "/" }
 version = "0.1.0"
 
 [[component]]
+environment = { DB_URL = "host=localhost user=postgres password=password dbname=spin_dev"}
 id = "subscription"
 source = "subscription/target/wasm32-wasi/release/subscription.wasm"
 allowed_http_hosts = []

@@ -16,6 +16,8 @@ bytes = "1"
 # General-purpose crate with common HTTP types.
 http = "0.2"
 maud = "0.25.0"
+serde = { version = "1.0.190", features = ["derive"] }
+serde_urlencoded = "0.7.1"
 # The Spin SDK.
 spin-sdk = { git = "https://github.com/fermyon/spin", tag = "v1.5.1" }
 
